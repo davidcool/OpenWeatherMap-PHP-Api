@@ -242,6 +242,75 @@ class OpenWeatherMap
         return new WeatherForecast($xml, $units, $days);
     }
 
+/**
+     * Returns the current weather at the place you specified as an object.
+     *
+     * @param array|int|string $query The place to get weather information for. For possible values see below.
+     * @param string           $units Can be either 'metric' or 'imperial' (default). This affects almost all units returned.
+     * @param string           $lang  The language to use for descriptions, default is 'en'. For possible values see below.
+     * @param string           $appid Your app id, default ''. See http://openweathermap.org/appid for more details.
+     * @param int              $days  For how much days you want to get a forecast. Default 1, maximum: 14.
+     *
+     * @throws OpenWeatherMap\Exception If OpenWeatherMap returns an error.
+     * @throws \InvalidArgumentException If an argument error occurs.
+     *
+     * @return WeatherForecast The WeatherForecast object.
+     *
+     * There are three ways to specify the place to get weather information for:
+     * - Use the city name: $query must be a string containing the city name.
+     * - Use the city id: $query must be an integer containing the city id.
+     * - Use the coordinates: $query must be an associative array containing the 'lat' and 'lon' values.
+     *
+     * Available languages are (as of 17. July 2013):
+     * - English - en
+     * - Russian - ru
+     * - Italian - it
+     * - Spanish - sp
+     * - Ukrainian - ua
+     * - German - de
+     * - Portuguese - pt
+     * - Romanian - ro
+     * - Polish - pl
+     * - Finnish - fi
+     * - Dutch - nl
+     * - French - fr
+     * - Bulgarian - bg
+     * - Swedish - se
+     * - Chinese Traditional - zh_tw
+     * - Chinese Simplified - zh_cn
+     * - Turkish - tr
+     *
+     * @api
+     */
+
+    public function getWeatherDailyForecast($query, $units = 'imperial', $lang = 'en', $appid = '', $days = 1)
+    {
+        // Disable default error handling of SimpleXML (Do not throw E_WARNINGs).
+        libxml_use_internal_errors(true);
+        libxml_clear_errors();
+
+        if ($days <= 14) {
+            $answer = $this->getRawDailyForecastData($query, $units, $lang, $appid, 'xml', $days);
+        } else {
+            throw new \InvalidArgumentException('Error: forecasts are only available for the next 14 days. $days must be lower than 15.');
+        }
+
+        try {
+            $xml = new \SimpleXMLElement($answer);
+        } catch (\Exception $e) {
+            // Invalid xml format. This happens in case OpenWeatherMap returns an error.
+            // OpenWeatherMap always uses json for errors, even if one specifies xml as format.
+            $error = json_decode($answer, true);
+            if (isset($error['message'])) {
+                throw new OWMException($error['message'], $error['cod']);
+            } else {
+                throw new OWMException('Unknown fatal error: OpenWeatherMap returned the following json object: ' . $answer);
+            }
+        }
+
+        return new WeatherForecast($xml, $units, $days);
+    }
+
     /**
      * Returns the weather history for the place you specified as an object.
      *

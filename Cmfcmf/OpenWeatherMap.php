@@ -308,7 +308,7 @@ class OpenWeatherMap
             }
         }
 
-        return new DailyWeatherForecast($xml, $units, $days);
+        return new WeatherDailyForecast($xml, $units, $days);
     }
 
     /**

@@ -57,7 +57,7 @@ class WeatherForecast implements \Iterator
      *
      * @see WeatherForecast The WeatherForecast class.
      */
-    private $forecasts;
+    public $forecasts; // changed from private to public!!!
 
     /**
      * @internal

@@ -236,7 +236,8 @@ class OpenWeatherMap
             if (isset($error['message'])) {
                 throw new OWMException($error['message'], $error['cod']);
             } else {
-                throw new OWMException('Unknown fatal error: OpenWeatherMap returned the following json object: ' . $answer);
+                //throw new OWMException('Unknown fatal error: OpenWeatherMap returned the following json object: ' . $answer);
+                throw new OWMException('Error loading the weather, try refreshing...');
             }
         }
 

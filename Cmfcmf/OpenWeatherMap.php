@@ -235,10 +235,11 @@ class OpenWeatherMap
             // OpenWeatherMap always uses json for errors, even if one specifies xml as format.
             $error = json_decode($answer, true);
             if (isset($error['message'])) {
-                throw new OWMException($error['message'], $error['cod']);
+                //throw new OWMException($error['message'], $error['cod']);
+                echo "Error loading the weather, try refreshing...";
             } else {
                 //throw new OWMException('Unknown fatal error: OpenWeatherMap returned the following json object: ' . $answer);
-                throw new OWMException('Error loading the weather, try refreshing...');
+                echo "Error loading the weather, try refreshing...";
             }
         }
 
